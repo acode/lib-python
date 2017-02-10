@@ -1,6 +1,6 @@
 # StdLib Python Bindings
 
-Basic Python bindings for StdLib service accession. Python 2.7 and 3.6 supported.
+Basic Python bindings for StdLib service accession. Python 2.x and 3.x supported.
 
 Used to interface with services built using [StdLib](https://stdlib.com) and
 the [StdLib Command Line Tools](https://github.com/stdlib/lib).

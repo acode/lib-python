@@ -11,6 +11,9 @@ class LibGen():
         self.__cfg__ = cfg
         self.__names__ = names
 
+    def __repr__(self):
+        return '<lib: ' + self.__str__() + '>'
+
     def __str__(self):
         return '.'.join(self.__names__)
 
@@ -82,9 +85,8 @@ class LibGen():
 
     def __call__(self, *args, **kwargs):
 
-        import http.client
+        import sys
         import json
-        import re
 
         if len(self.__names__) == 0:
             cfg = args[0] if len(args) > 0 and type(args[0]) is dict else {}
@@ -106,6 +108,18 @@ class LibGen():
 
         body = json.dumps({'args': args, 'kwargs': kwargs})
 
+        if (sys.version_info > (3, 0)):
+            return self.__py3__(name, body)
+        else:
+            return self.__py2__(name, body)
+
+
+    def __py3__(self, name, body):
+
+        import http.client
+        import json
+        import re
+
         conn = http.client.HTTPSConnection(self.__cfg__['host'], self.__cfg__['port'])
         conn.request('POST', self.__cfg__['path'] + name, body, {'Content-Type': 'application/json'})
         r = conn.getresponse()
@@ -121,6 +135,33 @@ class LibGen():
                 response = None
         elif contentType is None or re.compile(r"^text\/.*$", re.I).match(str(contentType)):
             response = response.decode('utf-8')
+
+        if r.status / 100 != 2:
+            raise RuntimeError(response)
+
+        return response
+
+    def __py2__(self, name, body):
+
+        import httplib
+        import json
+        import re
+
+        conn = httplib.HTTPSConnection(self.__cfg__['host'], self.__cfg__['port'])
+        conn.request('POST', self.__cfg__['path'] + name, body, {'Content-Type': 'application/json'})
+        r = conn.getresponse()
+        contentType = r.getheader('Content-Type')
+        response = r.read()
+        conn.close()
+
+        if contentType == 'application/json':
+            response = unicode(response)
+            try:
+                response = json.loads(response);
+            except:
+                response = None
+        elif contentType is None or re.compile(r"^text\/.*$", re.I).match(str(contentType)):
+            response = unicode(response)
 
         if r.status / 100 != 2:
             raise RuntimeError(response)
