@@ -7,7 +7,6 @@ setup(
   author = 'Keith Horwood',
   author_email = 'keithwhor@gmail.com',
   url = 'https://github.com/stdlib/lib-python',
-  download_url = 'https://github.com/stdlib/lib-python/tarball/2.0.0',
   keywords = ['stdlib', 'microservice', 'serverless'],
   license='MIT',
   classifiers = [
