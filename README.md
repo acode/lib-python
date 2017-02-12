@@ -1,5 +1,10 @@
 # StdLib Python Bindings
 
+[Node](https://github.com/stdlib/lib-node) |
+**Python** |
+[Ruby](https://github.com/stdlib/lib-ruby) |
+[Web](https://github.com/stdlib/lib-js)
+
 Basic Python bindings for StdLib service accession. Python 2.x and 3.x supported.
 
 Used to interface with services built using [StdLib](https://stdlib.com) and
@@ -9,7 +14,7 @@ The `lib` package is available on [PyPI: lib](https://pypi.python.org/pypi/lib) 
 operates as zero-dependency interface to run StdLib functions. This means that
 you can utilize any service on StdLib without installing any additional
 dependencies, and when you've deployed services to StdLib, you have a pre-built
-Ruby SDK --- for example;
+Python SDK --- for example;
 
 ```python
 from lib import lib
