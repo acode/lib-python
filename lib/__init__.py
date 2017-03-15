@@ -122,8 +122,8 @@ class LibGen():
 
         conn = http.client.HTTPSConnection(self.__cfg__['host'], self.__cfg__['port'])
         headers = {'Content-Type': 'application/json'}
-        if 'libraryToken' in self.__cfg__:
-            headers['Authorization'] = 'Bearer ' + self.__cfg__['libraryToken']
+        if 'token' in self.__cfg__:
+            headers['Authorization'] = 'Bearer ' + self.__cfg__['token']
         conn.request('POST', self.__cfg__['path'] + name, body, headers)
         r = conn.getresponse()
         contentType = r.getheader('Content-Type')
@@ -152,8 +152,8 @@ class LibGen():
 
         conn = httplib.HTTPSConnection(self.__cfg__['host'], self.__cfg__['port'])
         headers = {'Content-Type': 'application/json'}
-        if 'libraryToken' in self.__cfg__:
-            headers['Authorization'] = 'Bearer ' + self.__cfg__['libraryToken']
+        if 'token' in self.__cfg__:
+            headers['Authorization'] = 'Bearer ' + self.__cfg__['token']
         conn.request('POST', self.__cfg__['path'] + name, body, headers)
         r = conn.getresponse()
         contentType = r.getheader('Content-Type')
