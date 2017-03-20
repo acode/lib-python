@@ -99,11 +99,11 @@ class LibGen():
         kwargs = args.pop() if not bool(kwargs) and (len(args) > 0 and type(args[-1]) is dict) else kwargs
 
         for value in args:
-            if (value is not None and
-                value is not bool and
-                value is not str and
-                value is not int and
-                value is not float):
+            if (type(value) is not None and
+                type(value) is not bool and
+                type(value) is not str and
+                type(value) is not int and
+                type(value) is not float):
                     raise ValueError('.'.join(self.__names__) + ': All arguments must be Boolean, Number, String or None')
 
         body = json.dumps({'args': args, 'kwargs': kwargs})
@@ -121,7 +121,10 @@ class LibGen():
         import re
 
         conn = http.client.HTTPSConnection(self.__cfg__['host'], self.__cfg__['port'])
-        conn.request('POST', self.__cfg__['path'] + name, body, {'Content-Type': 'application/json'})
+        headers = {'Content-Type': 'application/json'}
+        if 'token' in self.__cfg__:
+            headers['Authorization'] = 'Bearer ' + self.__cfg__['token']
+        conn.request('POST', self.__cfg__['path'] + name, body, headers)
         r = conn.getresponse()
         contentType = r.getheader('Content-Type')
         response = r.read()
@@ -148,7 +151,10 @@ class LibGen():
         import re
 
         conn = httplib.HTTPSConnection(self.__cfg__['host'], self.__cfg__['port'])
-        conn.request('POST', self.__cfg__['path'] + name, body, {'Content-Type': 'application/json'})
+        headers = {'Content-Type': 'application/json'}
+        if 'token' in self.__cfg__:
+            headers['Authorization'] = 'Bearer ' + self.__cfg__['token']
+        conn.request('POST', self.__cfg__['path'] + name, body, headers)
         r = conn.getresponse()
         contentType = r.getheader('Content-Type')
         response = r.read()
