@@ -91,7 +91,6 @@ class LibGen():
     def __call__(self, *args, **kwargs):
 
         import sys
-        import json
         import urllib
 
         cfg = self.__cfg__
@@ -115,11 +114,6 @@ class LibGen():
             elif bool(kwargs):
                 raise ValueError('.'.join(self.__names__) + ': Can not pass arguments and kwargs')
 
-        if bool(kwargs):
-            body = json.dumps(kwargs)
-        else:
-            body = json.dumps(args)
-
         headers = {}
         headers['Content-Type'] = 'application/json'
         headers['X-Faaslang'] = 'true'
@@ -136,12 +130,83 @@ class LibGen():
                 pathname += '={0}'.format(bg)
 
         if (sys.version_info > (3, 0)):
-            return self.__py3__(cfg, pathname, body, headers)
+            body = self.__py3body__(args, kwargs)
+            return self.__py3request__(cfg, pathname, body, headers)
         else:
-            return self.__py2__(cfg, pathname, body, headers)
+            body = self.__py2body__(args, kwargs)
+            return self.__py2request__(cfg, pathname, body, headers)
 
+    def __py3body__(self, args, kwargs):
 
-    def __py3__(self, cfg, pathname, body, headers):
+        import base64
+        import json
+        import io
+
+        if bool(kwargs):
+            kw = {}
+            for key in kwargs:
+                value = kwargs[key]
+                if isinstance(value, io.IOBase):
+                    if value.closed:
+                        raise ValueError('.'.join(self.__names__) + ': Can not read from closed file')
+                    if value.encoding == 'UTF-8':
+                        value = value.buffer
+                    base64data = base64.b64encode(value.read()).decode('UTF-8')
+                    value.close()
+                    kw[key] = {'_base64': base64data}
+                else:
+                    kw[key] = value
+            body = json.dumps(kw)
+        else:
+            a = []
+            for value in args:
+                if isinstance(value, io.IOBase):
+                    if value.closed:
+                        raise ValueError('.'.join(self.__names__) + ': Can not read from closed file')
+                    if value.encoding == 'UTF-8':
+                        value = value.buffer
+                    base64data = base64.b64encode(value.read()).decode('UTF-8')
+                    value.close()
+                    a.push({'_base64': base64data})
+                else:
+                    a.push(value)
+            body = json.dumps(args)
+
+        return body
+
+    def __py2body__(self, args, kwargs):
+
+        import json
+
+        if bool(kwargs):
+            kw = {}
+            for key in kwargs:
+                value = kwargs[key]
+                if isinstance(value, file):
+                    if value.closed:
+                        raise ValueError('.'.join(self.__names__) + ': Can not read from closed file')
+                    base64data = value.read().encode('base64').strip()
+                    value.close()
+                    kw[key] = {'_base64': base64data}
+                else:
+                    kw[key] = value
+            body = json.dumps(kw)
+        else:
+            a = []
+            for value in args:
+                if isinstance(value, file):
+                    if value.closed:
+                        raise ValueError('.'.join(self.__names__) + ': Can not read from closed file')
+                    base64data = value.read().encode('base64').strip()
+                    value.close()
+                    a.push({'_base64': base64data})
+                else:
+                    a.push(value)
+            body = json.dumps(args)
+
+        return body
+
+    def __py3request__(self, cfg, pathname, body, headers):
 
         import http.client
 
@@ -154,8 +219,7 @@ class LibGen():
 
         return self.__complete__(r.status, contentType, response)
 
-
-    def __py2__(self, cfg, pathname, body, headers):
+    def __py2request__(self, cfg, pathname, body, headers):
 
         import httplib
 
