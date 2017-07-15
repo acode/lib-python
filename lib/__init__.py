@@ -1,8 +1,13 @@
 class LibGen():
 
-    HOST = 'f.stdlib.com'
+    import os
+
+    HOST = 'functions.lib.id'
     PORT = 443
     PATH = '/'
+
+    LOCALENV = 'local'
+    LOCALPORT = os.getenv('STDLIB_LOCAL_PORT', 8170)
 
     def __init__(self, cfg={}, names=[]):
         cfg['host'] = cfg['host'] if 'host' in cfg else self.HOST
@@ -87,83 +92,97 @@ class LibGen():
 
         import sys
         import json
+        import urllib
+
+        cfg = self.__cfg__
 
         if len(self.__names__) == 0:
             cfg = args[0] if len(args) > 0 and type(args[0]) is dict else {}
             return LibGen(cfg)
-        elif self.__names__[0] == '':
-            raise NameError('StdLib local execution currently unavailable in Python')
+        elif len(self.__names__) >= 3 and self.__names__[2] == '@' + self.LOCALENV:
+            cfg['host'] = 'localhost';
+            cfg['port'] = self.LOCALPORT;
 
-        name = '/'.join(self.__names__[0:2]) + '/'.join(self.__names__[2:])
+        pathname = '/'.join(self.__names__[0:2]) + '/'.join(self.__names__[2:])
+        pathname += '/'
         args = list(args)
-        kwargs = args.pop() if not bool(kwargs) and (len(args) > 0 and type(args[-1]) is dict) else kwargs
 
-        for value in args:
-            if (value is not None and
-                value is not bool and
-                value is not str and
-                value is not int and
-                value is not float):
-                    raise ValueError('.'.join(self.__names__) + ': All arguments must be Boolean, Number, String or None')
+        if len(args) > 0:
+            if len(args) == 1 and type(args[0]) is dict:
+                kw = args[0].copy()
+                kw.update(kwargs)
+                kwargs = kw
+            elif bool(kwargs):
+                raise ValueError('.'.join(self.__names__) + ': Can not pass arguments and kwargs')
 
-        body = json.dumps({'args': args, 'kwargs': kwargs})
+        if bool(kwargs):
+            body = json.dumps(kwargs)
+        else:
+            body = json.dumps(args)
+
+        headers = {}
+        headers['Content-Type'] = 'application/json'
+        headers['X-Faaslang'] = 'true'
+        if 'token' in cfg:
+            headers['Authorization'] = 'Bearer {0}'.format(cfg['token'])
+        if 'keys' in cfg:
+            headers['X-Authorization-Keys'] = json.dumps(cfg['keys'])
+        if 'convert' in cfg:
+            headers['X-Convert-Strings'] = 'true'
+        if 'bg' in cfg:
+            pathname += ':bg'
+            if type(cfg['bg']) is str:
+                bg = urllib.quote(cfg['bg'].encode('utf-8'))
+                pathname += '={0}'.format(bg)
 
         if (sys.version_info > (3, 0)):
-            return self.__py3__(name, body)
+            return self.__py3__(cfg, pathname, body, headers)
         else:
-            return self.__py2__(name, body)
+            return self.__py2__(cfg, pathname, body, headers)
 
 
-    def __py3__(self, name, body):
+    def __py3__(self, cfg, pathname, body, headers):
 
         import http.client
-        import json
-        import re
 
-        conn = http.client.HTTPSConnection(self.__cfg__['host'], self.__cfg__['port'])
-        conn.request('POST', self.__cfg__['path'] + name, body, {'Content-Type': 'application/json'})
+        conn = http.client.HTTPSConnection(cfg['host'], cfg['port'])
+        conn.request('POST', self.__cfg__['path'] + pathname, body, headers)
         r = conn.getresponse()
         contentType = r.getheader('Content-Type')
         response = r.read()
         conn.close()
 
-        if contentType == 'application/json':
-            response = response.decode('utf-8')
-            try:
-                response = json.loads(response);
-            except:
-                response = None
-        elif contentType is None or re.compile(r"^text\/.*$", re.I).match(str(contentType)):
-            response = response.decode('utf-8')
+        return self.__complete__(r.status, contentType, response)
 
-        if r.status / 100 != 2:
-            raise RuntimeError(response)
 
-        return response
-
-    def __py2__(self, name, body):
+    def __py2__(self, cfg, pathname, body, headers):
 
         import httplib
-        import json
-        import re
 
-        conn = httplib.HTTPSConnection(self.__cfg__['host'], self.__cfg__['port'])
-        conn.request('POST', self.__cfg__['path'] + name, body, {'Content-Type': 'application/json'})
+        conn = httplib.HTTPSConnection(cfg['host'], cfg['port'])
+        conn.request('POST', cfg['path'] + pathname, body, headers)
         r = conn.getresponse()
         contentType = r.getheader('Content-Type')
         response = r.read()
         conn.close()
 
+        return self.__complete__(r.status, contentType, response)
+
+    def __complete__(self, status, contentType, response):
+
+        import json
+        import re
+
         if contentType == 'application/json':
-            response = unicode(response)
+            response = response.decode('utf-8')
             try:
                 response = json.loads(response);
             except:
                 response = None
         elif contentType is None or re.compile(r"^text\/.*$", re.I).match(str(contentType)):
-            response = unicode(response)
+            response =  response.decode('utf-8')
 
-        if r.status / 100 != 2:
+        if status / 100 != 2:
             raise RuntimeError(response)
 
         return response
