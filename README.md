@@ -42,34 +42,47 @@ $ pip install lib
 ```python
 from lib import lib
 
-# [1]: Call "stdlib.reflect" function, the latest version, from StdLib
-result = lib.stdlib.reflect(0, 1, kwarg='value')
+# [1]: Call "utils.reflect" function, the latest version, from StdLib
+result = lib.utils.reflect(key='value')
+result = lib.utils.reflect({'key': 'value'}) # also works
+result = lib.utils.reflect('value') # also works, if first parameter is "key"
 
-# [2]: Call "stdlib.reflect" function from StdLib, with "dev" environment
-result = lib.stdlib.reflect['@dev'](0, 1, kwarg='value')
+# [2]: Call "utils.reflect" function from StdLib, with "dev" environment
+result = lib.utils.reflect['@dev'](key='value')
 
-# [3]: Call "stdlib.reflect" function from StdLib, with "release" environment
+# [3]: Call "utils.reflect" function from StdLib, with "release" environment
 #      This is equivalent to (1)
-result = lib.stdlib.reflect['@release'](0, 1, kwarg='value')
+result = lib.utils.reflect['@release'](key='value')
 
-# [4]: Call "stdlib.reflect" function from StdLib, with specific version
+# [4]: Call "utils.reflect" function from StdLib, with specific version
 #      This is equivalent to (1)
-result = lib.stdlib.reflect['@0.0.1'](0, 1, kwarg='value')
+result = lib.utils.reflect['@0.0.1'](key='value')
 
 # [5]: Call functions within the service (not just the defaultFunction)
 #      This is equivalent to (1) when "main" is the default function
-result = lib.stdlib.reflect.main(0, 1, kwarg='value')
+result = lib.utils.reflect.main(key='value')
 
 # Valid string composition from first object property only:
-result = lib['stdlib.reflect'](0, 1, kwarg='value')
-result = lib['stdlib.reflect[@dev]'](0, 1, kwarg='value')
-result = lib['stdlib.reflect[@release]'](0, 1, kwarg='value')
-result = lib['stdlib.reflect[@0.0.1]'](0, 1, kwarg='value')
-result = lib['stdlib.reflect.main'](0, 1, kwarg='value')
-result = lib['stdlib.reflect[@dev].main'](0, 1, kwarg='value')
-result = lib['stdlib.reflect[@release].main'](0, 1, kwarg='value')
-result = lib['stdlib.reflect[@0.0.1].main'](0, 1, kwarg='value')
+result = lib['utils.reflect'](key='value')
+result = lib['utils.reflect[@dev]'](key='value')
+result = lib['utils.reflect[@release]'](key='value')
+result = lib['utils.reflect[@0.0.1]'](key='value')
+result = lib['utils.reflect.main'](key='value')
+result = lib['utils.reflect[@dev].main'](key='value')
+result = lib['utils.reflect[@release].main'](key='value')
+result = lib['utils.reflect[@0.0.1].main'](key='value')
 ```
+
+## Sending File Data
+
+In order to send file parameters, in Python 2.7 or 3.6, simply use;
+
+```python
+lib.username.service(parameter=open('/path/to/file.jpg'))
+```
+
+Where `parameter` is the parameter name expecting a file type (type "buffer"
+as listed on StdLib).
 
 ## Additional Information
 
