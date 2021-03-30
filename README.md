@@ -1,15 +1,9 @@
-# StdLib Python Bindings
+# Autocode standard library Python bindings
 
-[StdLib Setup](https://github.com/stdlib/lib) |
-[Node](https://github.com/stdlib/lib-node) |
-**Python** |
-[Ruby](https://github.com/stdlib/lib-ruby) |
-[Web](https://github.com/stdlib/lib-js)
+Basic Python bindings for Autocode standard library service accession. Python 2.x and 3.x supported.
 
-Basic Python bindings for StdLib service accession. Python 2.x and 3.x supported.
-
-Used to interface with services built using [StdLib](https://stdlib.com) and
-the [StdLib Command Line Tools](https://github.com/stdlib/lib).
+Used to interface with services built using [Autocode](https://autocode.com) and
+the [Autocode CLI](https://github.com/acode/cli).
 
 The `lib` package is available on [PyPI: lib](https://pypi.python.org/pypi/lib) and
 operates as zero-dependency interface to run StdLib functions. This means that
@@ -86,9 +80,10 @@ as listed on StdLib).
 
 ## Additional Information
 
-To learn more about StdLib, visit [stdlib.com](https://stdlib.com) or read the
-[StdLib CLI documentation on GitHub](https://github.com/stdlib/lib).
+To learn more about Autocode and the standard library, visit
+[autocode.com](https://autocode.com) or read the
+[Autocode CLI documentation on GitHub](https://github.com/acode/cli).
 
-You can follow the development team on Twitter, [@StdLibHQ](https://twitter.com/stdlibhq)
+You can follow the development team on Twitter, [@AutocodeHQ](https://twitter.com/AutocodeHQ)
 
-StdLib is &copy; 2016 - 2017 Polybit Inc.
+Autocode is &copy; 2016 - 2021 Polybit Inc.
