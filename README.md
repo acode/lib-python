@@ -1,17 +1,18 @@
 # Autocode standard library Python bindings
 
-Basic Python bindings for Autocode standard library service accession. Python 2.x and 3.x supported.
+Basic Python bindings for Autocode standard library service accession.
+Python 2.x and 3.x supported.
 
 Used to interface with services built using [Autocode](https://autocode.com) and
 the [Autocode CLI](https://github.com/acode/cli).
 
-The `lib` package is available on [PyPI: lib](https://pypi.python.org/pypi/lib) and
-operates as zero-dependency interface to run StdLib functions. This means that
-you can utilize any service on StdLib without installing any additional
-dependencies, and when you've deployed services to StdLib, you have a pre-built
-Python SDK --- for example;
+The `lib` package is available on [PyPI: lib](https://pypi.python.org/pypi/lib)
+and operates as zero-dependency interface to run StdLib functions.
+This means that you can utilize any service on StdLib without installing any
+additional dependencies, and when you've deployed services to StdLib, you have
+a pre-built Python SDK. For example.
 
-```python
+```
 from lib import lib
 
 try:
@@ -20,8 +21,8 @@ except RuntimeError as err:
     # handle error
 ```
 
-To discover StdLib services, visit https://stdlib.com/search. To build a service,
-get started with [the StdLib CLI tools](https://github.com/stdlib/lib).
+To discover StdLib services, visit https://stdlib.com/search. To build a
+service, get started with [the StdLib CLI tools](https://github.com/stdlib/lib).
 
 ## Installation
 
@@ -84,6 +85,7 @@ To learn more about Autocode and the standard library, visit
 [autocode.com](https://autocode.com) or read the
 [Autocode CLI documentation on GitHub](https://github.com/acode/cli).
 
-You can follow the development team on Twitter, [@AutocodeHQ](https://twitter.com/AutocodeHQ)
+You can follow the development team on Twitter,
+[@AutocodeHQ](https://twitter.com/AutocodeHQ).
 
 Autocode is &copy; 2016 - 2021 Polybit Inc.
