@@ -2,7 +2,7 @@ class LibGen():
 
     import os
 
-    HOST = 'functions.lib.id'
+    HOST = 'functions.api.stdlib.com'
     PORT = 443
     PATH = '/'
 
