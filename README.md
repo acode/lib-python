@@ -12,7 +12,7 @@ This means that you can utilize any service on StdLib without installing any
 additional dependencies, and when you've deployed services to StdLib, you have
 a pre-built Python SDK. For example.
 
-```
+```py
 from lib import lib
 
 try:
